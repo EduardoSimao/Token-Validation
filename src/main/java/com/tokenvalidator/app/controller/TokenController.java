@@ -2,7 +2,10 @@ package com.tokenvalidator.app.controller;
 
 import org.springframework.web.bind.annotation.RequestBody ;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.apache.tomcat.util.codec.binary.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tokenvalidator.app.domain.user.AuthenticationDTO;
 import com.tokenvalidator.app.domain.user.LoginResponseDTO;
 import com.tokenvalidator.app.domain.user.RegisterDTO;
+import com.tokenvalidator.app.domain.user.ValidateTokenDTO;
 import com.tokenvalidator.app.domain.user.user;
 import com.tokenvalidator.app.infra.security.TokenService;
 import com.tokenvalidator.app.model.Token;
@@ -33,17 +37,25 @@ public class TokenController {
 	@Autowired
 	private TokenService tokenService;
 
+	@Value("${api.security.token.secret}")
+    private String secret;
+
 	@PostMapping(value="/validate")
-	public String validate( @RequestBody Token token) {
+	public String validate( @RequestBody @Valid Token token){
+		try{
 
-		// altere esse metodo para atender as regras de definidas no readme.
-		// você pode modificar o tipo de retorno, importar outros pacotes, criar mais classes.
-		// existe uma pasta chamada Model para gerenciar o objeto Token
+			String[] split_string = token.getValue().split("\\.");
+			String base64EncodedBody = split_string[1];
+			Base64 base64Url = new Base64(true);
+			String body = new String(base64Url.decode(base64EncodedBody));
+		   
+			return ValidateTokenDTO.validateToken(body);
 
-		// Imprimindo o input recebido
-		//System.out.println(token.getValue());
-
-		return "false";
+		}catch(IllegalArgumentException error){
+			//Caso não seja JWT não seja valido
+			return "Falso";
+		}
+       
 	}
 
 	@PostMapping("/login")
