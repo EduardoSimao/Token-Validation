@@ -7,6 +7,6 @@ import com.tokenvalidator.app.domain.user.user;
 
 public interface UserRepository extends JpaRepository<user, String>{
 
-    UserDetails findByEmail(String email);
+    UserDetails findBySeed(String seed);
     
 }

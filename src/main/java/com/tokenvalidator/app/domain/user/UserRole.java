@@ -1,9 +1,10 @@
 package com.tokenvalidator.app.domain.user;
 
 public enum UserRole {
-    ADMIN("admin"),
+    ADMIN("ADMIN"),
     MEMBER("member"),
-    EXTERNAL("external");
+    EXTERNAL("external"),
+    USER("user");
 
     private String role;
 

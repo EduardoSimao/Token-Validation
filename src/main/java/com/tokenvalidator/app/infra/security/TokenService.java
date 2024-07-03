@@ -12,7 +12,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.tokenvalidator.app.domain.user.user;
+import com.tokenvalidator.app.domain.user.RegisterDTO;
 
 @Service
 public class TokenService {
@@ -20,13 +20,13 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
-    public String generateToken(user user){
+    public String generateToken(RegisterDTO registerDTO){
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
             String token = JWT.create()
-                .withIssuer("auth-api")
-                .withSubject(user.getEmail())
-                .withExpiresAt(generateExpirationDate())
+                .withClaim("Name", registerDTO.name())
+                .withClaim("Seed", registerDTO.seed())
+                .withClaim("Role", registerDTO.role().toString())
                 .sign(algorithm);
 
             return token;

@@ -45,14 +45,19 @@ public class TokenController {
 		try{
 
 			String[] split_string = token.getValue().split("\\.");
+
 			String base64EncodedBody = split_string[1];
+
 			Base64 base64Url = new Base64(true);
+
 			String body = new String(base64Url.decode(base64EncodedBody));
-		   
+            
 			return ValidateTokenDTO.validateToken(body);
 
 		}catch(IllegalArgumentException error){
 			//Caso não seja JWT não seja valido
+            System.out.println("Token in invalid");
+
 			return "Falso";
 		}
        
@@ -60,21 +65,24 @@ public class TokenController {
 
 	@PostMapping("/login")
 	public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
-		var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
-		var auth = this.authenticationManager.authenticate(usernamePassword);
+		// var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
+		// var auth = this.authenticationManager.authenticate(usernamePassword);
 
-		var  token = tokenService.generateToken((user) auth.getPrincipal());
-		return ResponseEntity.ok(new LoginResponseDTO(token));
+		// var  token = tokenService.generateToken((user) auth.getPrincipal());
+		//return ResponseEntity.ok(new LoginResponseDTO(token));
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/register")
 	public ResponseEntity register(@RequestBody @Valid RegisterDTO data) {
 
-		if(this.userRepository.findByEmail(data.email()) != null) return ResponseEntity.badRequest().build();
+		if(this.userRepository.findBySeed(data.seed()) != null) return ResponseEntity.badRequest().build();
 
-		String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
+		//String encryptedPassword = new BCryptPasswordEncoder().encode(data.seed());
+
+		var  token = tokenService.generateToken(data);
 		
-		user newUser = new user(data.name(), data.email(), encryptedPassword, data.role());
+		user newUser = new user(data.name(), data.seed(), data.role(), token);
 
 		this.userRepository.save(newUser);
 

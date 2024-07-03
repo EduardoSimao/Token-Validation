@@ -15,6 +15,7 @@ public class ValidateTokenDTO {
   
         //verificar se tem mais/menos que 3 claims
         if (list.size() != 3){
+            System.out.println("Token with more than 3 Claims");
             return "Falso";
         }
         else{
@@ -24,6 +25,8 @@ public class ValidateTokenDTO {
                     var value = GetValue(texto);
                     //verificar se claim Role deve conter um dos três valores (Admin, Member e External)
                     if (roleValidation(value) == "Falso"){
+                        System.out.println("Role must be: Admin, Member e External");
+
                         return "Falso";
                     }
 
@@ -35,6 +38,8 @@ public class ValidateTokenDTO {
                     //*máximo de 256 caracteres.
                     //*não pode ter números
                     if (nameValidation(value) == "Falso"){
+                        System.out.println("Inicio");
+
                         return "Falso";
                     }
                 }
@@ -44,6 +49,8 @@ public class ValidateTokenDTO {
                     var value = GetValue(texto);
                     //Verificar se o  Seed é um número primo.
                     if (seedValidation(value) == "Falso"){
+                        System.out.println("Seed is a non-prime number");
+
                         return "Falso";
                     }
                     
@@ -52,7 +59,7 @@ public class ValidateTokenDTO {
     
 
 
-    
+			System.out.println("Token in valid");
             return "Verdadeiro";
         }
 
@@ -70,11 +77,13 @@ public class ValidateTokenDTO {
 
     public static String nameValidation(String text){
         if(text.length() > 256){
+            System.out.println("Name is Longer than 256 characters");
             return "Falso";
         }
 
         for (int i = 0; i < text.length(); i++) {
             if(Character.isDigit(text.charAt(i))){
+                System.out.println("Name contains number");
                 return "Falso";
             }
         }
