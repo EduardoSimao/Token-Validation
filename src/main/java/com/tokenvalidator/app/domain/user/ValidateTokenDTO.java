@@ -12,8 +12,12 @@ public class ValidateTokenDTO {
     public static String validateToken(String jsonTest) {
  		String[] strArr = jsonTest.split(","); // Splitting using whitespace
         ArrayList<String> list = new ArrayList<String>(Arrays.asList(strArr));
-  
+        
+        Integer claims = 0;
         //verificar se tem mais/menos que 3 claims
+        //Pontos Importantes:
+            //Existe a possibilidade de entrar menos de 3 claims?
+            //Existe a possibilidade dos claims serem diferentes de: Role, Seed e Name?
         if (list.size() != 3){
             System.out.println("Token with more than 3 Claims");
             return "Falso";
@@ -21,8 +25,11 @@ public class ValidateTokenDTO {
         else{
             for (int i = 0; i < list.size(); i++) {
                 if(list.get(i).contains("Role")){
+                    claims = claims + 1;
+                    
                     var texto =  list.get(i);
                     var value = GetValue(texto);
+
                     //verificar se claim Role deve conter um dos três valores (Admin, Member e External)
                     if (roleValidation(value) == "Falso"){
                         System.out.println("Role must be: Admin, Member e External");
@@ -31,9 +38,11 @@ public class ValidateTokenDTO {
                     }
 
                 }else if(list.get(i).contains("Name")){
+                    claims = claims + 1;
+
                     var texto =  list.get(i);
-    
                     var value = GetValue(texto);
+
                     //Verificar Name:
                     //*máximo de 256 caracteres.
                     //*não pode ter números
@@ -44,9 +53,11 @@ public class ValidateTokenDTO {
                     }
                 }
                 else if(list.get(i).contains("Seed")){
+                    claims = claims + 1;
+
                     var texto =  list.get(i);
-    
                     var value = GetValue(texto);
+
                     //Verificar se o  Seed é um número primo.
                     if (seedValidation(value) == "Falso"){
                         System.out.println("Seed is a non-prime number");
@@ -56,11 +67,17 @@ public class ValidateTokenDTO {
                     
                 }
             }
-    
+            
+            if(claims != 3){
+                System.out.println("Token need: Role, Seed and Name");
+                return "Falso";
+
+            }else{
+                System.out.println("Token in valid");
+                return "Verdadeiro";
+            }
 
 
-			System.out.println("Token in valid");
-            return "Verdadeiro";
         }
 
     }
